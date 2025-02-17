@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database").default; // Import Sequelize instance
+const sequelize = require("../../config/database").default; // Import Sequelize instance
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(

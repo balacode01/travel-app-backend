@@ -3,8 +3,8 @@ const sequelize = require('./src/config/database');
 
 const PORT = process.env.PORT || 3000;
 
-sequelize.sync().then(() => {
-    console.log('hello world');
+sequelize.sync({alter: true}).then(() => {
+    console.log("Database connected successfully")
     app.listen(PORT, () => {
         console.log(`Server running on http://localhost:3000`);
     });
