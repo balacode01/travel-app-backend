@@ -10,4 +10,9 @@ sequelize.sync({alter: true}).then(() => {
     });
 }).catch((error) => {
     console.error('unable to connect to the database', error);
-})
+});
+
+
+
+
+/// run command "npx nodemon server.js" ///
