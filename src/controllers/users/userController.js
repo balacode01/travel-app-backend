@@ -11,6 +11,10 @@ const registerUser = async (req,res) => {
         /// get request body
         const {name, email_address, phone_number, profile_picture, bio, social_links} = req.body;
 
+        if(profile_picture && profile_picture.length > 10*1024*1024){
+            return res.status(400).json({message: "Image size too lrage", statusCode: 400});
+        }
+
         const existingUser = await User.findOne({
             where: { [Op.or] : [{email_address}, {phone_number}, {name}]}
         });
@@ -21,7 +25,7 @@ const registerUser = async (req,res) => {
             else if(existingUser.phone_number === phone_number) message = "Phone number already exists";
             else if (existingUser.name === name) message = "Name already exists";
 
-            return res.status(400).json({ message });
+            return res.status(422).json({ status: 422, message: "User details available",errors: message});
         }
 
         ////// create new user
@@ -31,6 +35,7 @@ const registerUser = async (req,res) => {
 
         return res.status(201).json({
             message: "User registered successfully",
+            statusCode: 201,
             user: {
                 id: newUser.id,
                 name: newUser.name,
@@ -44,11 +49,11 @@ const registerUser = async (req,res) => {
     }
     catch(error){
         if (error.name === "SequelizeUniqueConstraintError") {
-            return res.status(400).json({ message: "Email or phone number already exists" });
+            return res.status(400).json({ message: "Email or phone number already exists", statusCode: 400 });
         }
-    
         console.log("Internal Server Error", error);
-        return res.status(500).json({message: "Internal Server Error"});
+        console.error("Server error", error);
+        return res.status(500).json({message: "Internal Server Erroreee"});
     }
 }
 
@@ -90,6 +95,7 @@ const generateOtp = async (req, res) => {
         await OTP.create({ phone_number, otp, expires_at });
 
         return res.status(201).json({
+            statusCode: 201,
             message: "OTP is generated",
             phone_number,
             otp,
@@ -126,7 +132,9 @@ const verifyOtp = async (req, res) => {
         // Generate JWT token
         const token = jwt.sign({ phone_number }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        return res.status(200).json({ message: "OTP verified successfully", phone_number, token });
+        return res.status(201).json({
+            statusCode: 201,
+            message: "OTP verified successfully", phone_number, token });
 
     } catch (error) {
         console.error("Error verifying OTP:", error);

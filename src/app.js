@@ -8,11 +8,13 @@ const app = express();
 app.use(bodyParser.json());
 
 // API Routes 
+app.get('/', (req, res,next) => {
+    res.send('Server is running!');
+});
+
 app.use('/api', routes);
 
-
 app.use((err, req, res, next) => {
-    console.log(err.stack);
     res.status(500).json({
         message: "Internal Server Error"
     });
