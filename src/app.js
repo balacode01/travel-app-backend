@@ -9,7 +9,7 @@ const app = express();
 app.use(helmet()); // Security improvements
 app.use(cors()); // Allow frontend requests
 app.use(express.json()); // Use built-in JSON parser
-
+app.use(express.urlencoded({ extended: true })); 
 // API Routes
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Server is running!" });

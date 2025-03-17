@@ -1,53 +1,68 @@
-const { TripMedia, Trip } = require("../../models");
 const { Op } = require("sequelize");
+const { Trip,TripMedia  } = require("../../models");
 
 /**
  * Upload media for a trip
  */
 const uploadTripMedia = async (req, res) => {
   try {
-    const { trip_id, media_url, media_type, file_size, file_format, is_featured } = req.body;
-    const userId = req.user.id; // Get user ID from JWT middleware
+    console.log("Full req.body object:", req.body);
+    console.log("Full req.params object:", req.params);
 
-    // ✅ Check if the trip exists & belongs to the user
-    const trip = await Trip.findOne({
-      where: { id: trip_id, user_id: userId },
-    });
+    const trip_id = req.params.trip_id; // Get trip_id from URL
+    const { media } = req.body; // Expecting an array of media objects
+    const userId = req.user?.id;
+
+    console.log("Trip ID received:", trip_id);
+    console.log("User ID:", userId);
+    console.log("Media received:", media);
+
+    if (!trip_id) {
+      return res.status(400).json({ message: "Trip ID is required", statusCode: 400 });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized: No user ID found", statusCode: 401 });
+    }
+
+    if (!Array.isArray(media) || media.length === 0) {
+      return res.status(400).json({ message: "Media array is required", statusCode: 400 });
+    }
+
+    // ✅ Check if the trip exists
+    const trip = await Trip.findOne({ where: { id: trip_id, user_id: userId } });
 
     if (!trip) {
       return res.status(404).json({ message: "Trip not found or unauthorized", statusCode: 404 });
     }
 
-    // ✅ Validate media type
-    if (!["image", "video"].includes(media_type)) {
-      return res.status(400).json({ message: "Invalid media type", statusCode: 400 });
-    }
-
-    // ✅ Video length validation (assuming frontend sends file duration)
-    if (media_type === "video" && file_size > 30 * 1024 * 1024) { // Limit 30MB
-      return res.status(400).json({ message: "Video size should be under 30MB", statusCode: 400 });
-    }
-
-    // ✅ Create media entry
-    const tripMedia = await TripMedia.create({
+    // ✅ Upload multiple media files
+    const tripMediaEntries = media.map((item) => ({
       trip_id,
-      media_url,
-      media_type,
-      file_size,
-      file_format,
-      is_featured: is_featured || false, // Default to false
-    });
+      media_url: item.media_url,
+      media_type: item.media_type,
+      file_size: item.file_size,
+      file_format: item.file_format,
+      is_featured: item.is_featured || false,
+    }));
+
+    // Bulk insert
+    const uploadedMedia = await TripMedia.bulkCreate(tripMediaEntries);
 
     return res.status(201).json({
       message: "Media uploaded successfully",
       statusCode: 201,
-      media: tripMedia,
+      media: uploadedMedia,
     });
+
   } catch (error) {
     console.error("❌ Error uploading trip media:", error);
     return res.status(500).json({ message: "Internal Server Error", statusCode: 500 });
   }
 };
+
+
+
 
 /**
  * Get all media for a trip

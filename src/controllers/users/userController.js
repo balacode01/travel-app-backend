@@ -126,11 +126,18 @@ const verifyOtp = async (req, res) => {
             return res.status(400).json({ message: "OTP has expired" });
         }
 
+        // find the user associated with the phone number
+        const user = await User.findOne({ where: { phone_number } });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         // Delete OTP after verification (optional)
         await OTP.destroy({ where: { phone_number } });
 
         // Generate JWT token
-        const token = jwt.sign({ phone_number }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, phone_number }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
         return res.status(201).json({
             statusCode: 201,
