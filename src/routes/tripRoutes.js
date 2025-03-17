@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const tripController = require('../controllers/trips/tripsController');
+const TripMediaController = require('../controllers/trips/tripMediaController');
 const authToken = require("../middleware/authToken");
 
 // Define trip-related routes
@@ -13,14 +14,9 @@ router.get('/user/:user_id', tripController.getTripsByUserId);
 router.put('/:id', tripController.updateTrip);
 router.delete('/:id', tripController.deleteTrip);
 
-
-/// unccomment these lines for authentication code
-
-// router.post('/create', authToken, tripController.createTrip);
-// router.get('/list',authToken, tripController.getAllTrips);
-// router.get('/:id',authToken, tripController.getTripById);
-// router.get('/user/:user_id',authToken, tripController.getTripsByUserId);
-// router.put('/:id',authToken, tripController.updateTrip);
-// router.delete('/:id',authToken, tripController.deleteTrip);
+/// trip media routes
+router.post('/:trip_id/media/upload', TripMediaController.uploadTripMedia);
+router.get('/:trip_id/media', TripMediaController.getTripMedia);
+router.delete('/media/:media_id', TripMediaController.deleteTripMedia);
 
 module.exports = router;
