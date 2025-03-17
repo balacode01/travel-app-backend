@@ -1,6 +1,7 @@
 const { Op, where } = require("sequelize");
 const { Trip } = require("../../models"); // Adjust path based on your setup
 
+/// create a trip ///
 const createTrip = async (req, res) => {
     try {
         // Extract trip details from request body
@@ -68,7 +69,7 @@ const createTrip = async (req, res) => {
     }
 };
 
-
+/// get all trips ///
 const getAllTrips = async (req, res) => {
     // Logic to fetch all trips for a user
     try {
@@ -87,10 +88,69 @@ const getAllTrips = async (req, res) => {
     }
 };
 
+
+/// get all trips for user id ///
+const getTripsByUserId = async (req, res) => {
+    try {
+      const { user_id } = req.params;
+  
+      // Find trips by user_id
+      const trips = await Trip.findAll({
+        where: { user_id }
+      });
+  
+      if (trips.length === 0) {
+        return res.status(404).json({
+          message: "No trips found for this user",
+          statusCode: 404,
+        });
+      }
+  
+      return res.status(200).json({
+        message: "Trips fetched successfully",
+        statusCode: 200,
+        trips,
+      });
+    } catch (error) {
+      console.error("Error fetching trips:", error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        statusCode: 500,
+      });
+    }
+  };
+  
+
+/// get trip by id ///
 const getTripById = async (req, res) => {
-
-};
-
+    try {
+      const { id } = req.params;
+  
+      // Find trip by ID
+      const trip = await Trip.findOne({ where: { id } });
+  
+      if (!trip) {
+        return res.status(404).json({
+          message: "Trip not found",
+          statusCode: 404,
+        });
+      }
+  
+      return res.status(200).json({
+        message: "Trip fetched successfully",
+        statusCode: 200,
+        trip,
+      });
+    } catch (error) {
+      console.error("Error fetching trip:", error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        statusCode: 500,
+      });
+    }
+  };
+  
+/// update trip ///
 const updateTrip = async (req, res) => {
     // Logic to update an existing trip
 
@@ -142,6 +202,7 @@ const updateTrip = async (req, res) => {
     }
 };
 
+/// delete trip by id ///
 const deleteTrip = async (req, res) => {
     // Logic to delete a trip by its ID
     try {
@@ -190,6 +251,7 @@ module.exports = {
     createTrip,
     getAllTrips,
     getTripById,
+    getTripsByUserId,
     updateTrip,
     deleteTrip
 };

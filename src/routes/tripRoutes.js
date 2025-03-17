@@ -8,6 +8,7 @@ const tripController = require('../controllers/trips/tripsController');
 router.post('/create', tripController.createTrip);
 router.get('/list', tripController.getAllTrips);
 router.get('/:id', tripController.getTripById);
+router.get('/user/:user_id', tripController.getTripsByUserId);
 router.put('/:id', tripController.updateTrip);
 router.delete('/:id', tripController.deleteTrip);
 
