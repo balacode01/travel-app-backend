@@ -6,12 +6,16 @@ const sequelize = new Sequelize(process.env.DB_URL || 'postgres://postgres:admin
 /// import the model
 const UserModel = require('./auth/userModel');
 const OtpModel = require('./auth/otpModel');
+const TripModel = require('./trips/tripModels');
 
 // initialize the model
 const User = UserModel(sequelize, DataTypes);
 const OTP = OtpModel(sequelize, DataTypes);
+const Trip = TripModel(sequelize, DataTypes);
 
 module.exports = {
     User,
-    OTP
+    OTP,
+     Trip,
+     Sequelize,
 }
