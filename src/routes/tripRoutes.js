@@ -18,5 +18,7 @@ router.delete('/:id', tripController.deleteTrip);
 router.post('/:trip_id/media/upload',authToken, TripMediaController.uploadTripMedia); // for eg: '/2/media/upload
 // router.get('/:trip_id/media', TripMediaController.getTripMedia);
 // router.delete('/media/:media_id', TripMediaController.deleteTripMedia);
+/// trip media likes
+
 
 module.exports = router;
