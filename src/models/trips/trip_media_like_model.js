@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../../config/database").default; // Import Sequelize instance
+const sequelize = require("../../config/database").default;
 
 module.exports = (sequelize, DataTypes) => {
   const TripMediaLike = sequelize.define(
@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "trip_media", // Referencing the trip_media table
+          model: "trip_media",
           key: "id",
         },
         onDelete: "CASCADE",
@@ -23,21 +23,21 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BIGINT,
         allowNull: false,
         references: {
-          model: "users", // Referencing the users table
+          model: "users",
           key: "id",
         },
         onDelete: "CASCADE",
       },
     },
     {
-      tableName: "trip_media_likes", // Explicit table name
+      tableName: "trip_media_likes",
       timestamps: true,
-      createdAt: "created_at", // Match DB column name
+      createdAt: "created_at",
       updatedAt: "updated_at",
       indexes: [
         {
           unique: true,
-          fields: ["media_id", "user_id"], // Enforce unique likes per user per media
+          fields: ["media_id", "user_id"], // Prevents duplicate likes
         },
       ],
     }

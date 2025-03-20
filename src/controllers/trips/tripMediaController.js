@@ -62,54 +62,6 @@ const uploadTripMedia = async (req, res) => {
 };
 
 /**
- * Likes and unlike for media
- * **/
-const saveTripMediaLike = async (req,res) => {
-  try {
-    const {media_id} = req.params; // media Id from api URL
-    const user_id = req.user?.id; // user id from auth token middleware
-    if(!media_id){
-      return res.status(400).json({message: "Media ID is required", statusCode: 400});
-    }
-    if(!user_id){
-      return res.status(401).json({
-        message: "Unauthorised",
-        statusCode: 401
-      });
-    }
-
-    // check if media exists
-    const media = await TripMedia.findByPk(media_id);
-    if(!media){
-      return res.status(404).json({message: "Media not found", statusCode: 404});
-    }
-
-    // check if the user has already liked this media
-    const existingLike = await TripMedia.findOne({where: {media_id, user_id:user_id}});
-    if(existingLike){
-      return res.status(400).json({message: "You have already liked this media", statusCode: 400});
-    }
-
-
-    // ✅ Save the like
-    await TripMediaLike.create({ media_id, user_id: userId });
-
-    // ✅ Get the updated like count
-    const likeCount = await TripMediaLike.count({ where: { media_id } });
-
-    return res.status(201).json({
-      message: "Media liked successfully",
-      statusCode: 201,
-      like_count:likeCount
-    });
-
-  } catch(error){
-    console.log("Error saving trip media like", error);
-    return res.status(500).json({message: "Internal Server Error", statusCode: 500});
-  }
-}
-
-/**
  * Get all media for a trip
  */
 const getTripMedia = async (req, res) => {
@@ -159,4 +111,4 @@ const deleteTripMedia = async (req, res) => {
   }
 };
 
-module.exports = { uploadTripMedia, getTripMedia, deleteTripMedia, saveTripMediaLike };
+module.exports = { uploadTripMedia, getTripMedia, deleteTripMedia };
