@@ -64,26 +64,51 @@ const uploadTripMedia = async (req, res) => {
 /**
  * Get all media for a trip
  */
-const getTripMedia = async (req, res) => {
+/**
+ * fetch all media for one trip by one user
+ * **/
+const fetchAllTripMediaOfUser = async (req,res) => {
   try {
-    const { trip_id } = req.params;
+      const {trip_id, user_id} = req.params;
 
-    // ✅ Fetch media for the trip
-    const media = await TripMedia.findAll({
-      where: { trip_id },
-      order: [["created_at", "DESC"]],
-    });
+      // validate input
+      if(!trip_id || !user_id) {
+          return res.status(400).json({
+              message: "Trip ID and user ID are required",
+              statusCode: 400
+          });
+      }
 
-    if (!media.length) {
-      return res.status(404).json({ message: "No media found for this trip", statusCode: 404 });
-    }
+      const media = await TripMedia.findAll({
+        where: {trip_id},
+        include: [
+          {
+            model: Trip,
+            where: {user_id},
+          },
+        ],
+        order: [["created_at", "DESC"]],
+      });
 
-    return res.status(200).json({ message: "Media retrieved", statusCode: 200, media });
-  } catch (error) {
-    console.error("❌ Error fetching trip media:", error);
-    return res.status(500).json({ message: "Internal Server Error", statusCode: 500 });
+      if(!media.length){
+        return res.status(404).json({
+          message: "No media found for this trip by this trip by the user",
+          statusCode: 404,
+        });
+      }
+
+      return res.status(200).json({
+        message: "Media retrieved successfully", statusCode: 200,
+
+      })
+  } catch (error){
+    console.log("Error fetching user trip media: ", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      statusCode: 500,
+    })
   }
-};
+}
 
 /**
  * Delete a media file (only the owner can delete)
@@ -111,4 +136,4 @@ const deleteTripMedia = async (req, res) => {
   }
 };
 
-module.exports = { uploadTripMedia, getTripMedia, deleteTripMedia };
+module.exports = { uploadTripMedia, fetchAllTripMediaOfUser, deleteTripMedia };

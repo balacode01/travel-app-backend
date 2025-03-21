@@ -24,11 +24,10 @@ const registerUser = async (req,res) => {
             if(existingUser.email_address === email_address) message = "Email address already exists";
             else if(existingUser.phone_number === phone_number) message = "Phone number already exists";
             else if (existingUser.name === name) message = "Name already exists";
-
             return res.status(422).json({ status: 422, message: "User details available",errors: message});
         }
 
-        ////// create new user
+        /// create new user
         const newUser = await User.create({
             name, email_address, phone_number, profile_picture, bio, social_links: social_links || {},   
         });

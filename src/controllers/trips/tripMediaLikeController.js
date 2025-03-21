@@ -1,11 +1,9 @@
 const {Trip, TripMedia, TripMediaLikes} = require('../../models/');
 
 /**
- * Likes and unlike for media
+ * like an post(image/video)
+ * unlike an post(image/video)
  * **/
-/**
- * Like or Unlike a Trip Media
- */
 const toggleTripMediaLike = async (req, res) => {
     try {
       const { media_id } = req.params;
@@ -37,9 +35,9 @@ const toggleTripMediaLike = async (req, res) => {
     }
 };
   
-  /**
-   * Get like count for a media
-   */
+/**
+* Get like count for a media
+*/
   const getTripMediaLikes = async (req, res) => {
     try {
       const { media_id } = req.params;
@@ -56,6 +54,3 @@ const toggleTripMediaLike = async (req, res) => {
   
   module.exports = {toggleTripMediaLike, getTripMediaLikes };
   
-/**
- * Save a like for a trip media
- */

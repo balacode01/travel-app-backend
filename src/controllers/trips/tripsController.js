@@ -1,5 +1,6 @@
 const { Op, where } = require("sequelize");
-const { Trip } = require("../../models"); // Adjust path based on your setup
+const { Trip, User } = require("../../models"); // Adjust path based on your setup
+const { use } = require("../../routes/tripRoutes");
 
 /// create a trip ///
 const createTrip = async (req, res) => {
@@ -10,6 +11,13 @@ const createTrip = async (req, res) => {
         // Validate required fields
         if (!user_id || !name || !location || !from_date || !to_date || total_budget === undefined) {
             return res.status(400).json({ message: "Missing required fields", statusCode: 400 });
+        }
+        const userExists = await User.findByPk(user_id);
+        if(!userExists){
+            return res.status(404).json({
+                message: "User not found",
+                statusCode: 404,
+            });
         }
 
         // Validate total_budget
@@ -65,7 +73,7 @@ const createTrip = async (req, res) => {
         });
     } catch (error) {
         console.error("Server error", error);
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: "Intesrnal Server Error" });
     }
 };
 
@@ -73,6 +81,17 @@ const createTrip = async (req, res) => {
 const getAllTrips = async (req, res) => {
     // Logic to fetch all trips for a user
     try {
+        const user_id = req.user.id;
+        // find the user by id
+        const user = await User.findOne({where: {id: user_id}});
+        // check user exists
+        if(!user){
+            return res.status(404).json({
+                message: "User not found",
+                statusCode: 404,
+            });
+        }
+
         const trips = await Trip.findAll(); // fetch All trips
         return res.status(200).json({
             message: "Trips fetch Successfully",
@@ -93,6 +112,8 @@ const getAllTrips = async (req, res) => {
 const getTripsByUserId = async (req, res) => {
     try {
       const { user_id } = req.params;
+
+
   
       // Find trips by user_id
       const trips = await Trip.findAll({
@@ -125,6 +146,16 @@ const getTripsByUserId = async (req, res) => {
 const getTripById = async (req, res) => {
     try {
       const { id } = req.params;
+
+      // find the user by id
+      const user = await User.findOne({where: {id: user_id}});
+      // check user exists
+      if(!user){
+          return res.status(404).json({
+              message: "User not found",
+              statusCode: 404,
+          });
+      }
   
       // Find trip by ID
       const trip = await Trip.findOne({ where: { id } });
@@ -208,16 +239,20 @@ const deleteTrip = async (req, res) => {
     try {
         const { id } = req.params;
         const { user_id } = req.body;
-        console.log(id);
-        console.log("Idididididi");
-        console.log("=======");
-        console.log(user_id);
-        console.log("=======");
+
+        // find the user by id
+        const user = await User.findOne({where: {id: user_id}});
+        // check user exists
+        if(!user){
+            return res.status(404).json({
+                message: "User not found",
+                statusCode: 404,
+            });
+        }
 
         // find the trip by id //
         const trip = await Trip.findOne({ where: { id } });
-
-
+        // check trip exists for user
         if (!trip) {
             return res.status(404).json({
                 message: "Trip not found",
@@ -240,6 +275,7 @@ const deleteTrip = async (req, res) => {
         });
 
     } catch (error) {
+        console.log("Error: ", error);
         return res.status(500).json({
             message: "Internal Server error",
             statusCode: 500
