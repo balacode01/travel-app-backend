@@ -10,7 +10,7 @@ const authToken = require("../middleware/authToken");
 // Define trip-related routes
 router.post('/create', tripController.createTrip);
 router.get('/list', authToken, tripController.getAllTrips);
-router.get('/:id', tripController.getTripById);
+router.get('/:id', authToken, tripController.getTripById);
 router.get('/user/:user_id', tripController.getTripsByUserId);
 router.put('/:id', tripController.updateTrip);
 router.delete('/:id', tripController.deleteTrip);

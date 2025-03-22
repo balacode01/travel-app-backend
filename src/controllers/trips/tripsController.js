@@ -148,14 +148,14 @@ const getTripById = async (req, res) => {
       const { id } = req.params;
 
       // find the user by id
-      const user = await User.findOne({where: {id: user_id}});
-      // check user exists
-      if(!user){
-          return res.status(404).json({
-              message: "User not found",
-              statusCode: 404,
-          });
-      }
+    //   const user = await User.findOne({where: {id: user_id}});
+    //   // check user exists
+    //   if(!user){
+    //       return res.status(404).json({
+    //           message: "User not found",
+    //           statusCode: 404,
+    //       });
+    //   }
   
       // Find trip by ID
       const trip = await Trip.findOne({ where: { id } });
