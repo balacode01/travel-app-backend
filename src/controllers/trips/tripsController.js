@@ -107,26 +107,20 @@ const getAllTrips = async (req, res) => {
     }
 };
 
-
 /// get all trips for user id ///
 const getTripsByUserId = async (req, res) => {
     try {
       const { user_id } = req.params;
-
-
-  
       // Find trips by user_id
       const trips = await Trip.findAll({
         where: { user_id }
       });
-  
       if (trips.length === 0) {
         return res.status(404).json({
           message: "No trips found for this user",
           statusCode: 404,
         });
       }
-  
       return res.status(200).json({
         message: "Trips fetched successfully",
         statusCode: 200,
@@ -139,47 +133,47 @@ const getTripsByUserId = async (req, res) => {
         statusCode: 500,
       });
     }
-  };
+};
   
-
 /// get trip by id ///
 const getTripById = async (req, res) => {
     try {
-      const { id } = req.params;
-
-      // find the user by id
-    //   const user = await User.findOne({where: {id: user_id}});
-    //   // check user exists
-    //   if(!user){
-    //       return res.status(404).json({
-    //           message: "User not found",
-    //           statusCode: 404,
-    //       });
-    //   }
+      const user_id = req.user.id;
   
-      // Find trip by ID
-      const trip = await Trip.findOne({ where: { id } });
-  
-      if (!trip) {
+      // Find the user
+      const user = await User.findOne({ where: { id: user_id } });
+      if (!user) {
         return res.status(404).json({
-          message: "Trip not found",
+          message: "User not found",
           statusCode: 404,
         });
       }
   
-      return res.status(200).json({
-        message: "Trip fetched successfully",
-        statusCode: 200,
-        trip,
+      // Fetch all trips along with user details (username)
+      const trips = await Trip.findAll({
+        include: [
+          {
+            model: User,
+            attributes: ['name'], // Only fetch user name
+            as: 'user', // Ensure this matches the association
+          },
+        ],
       });
+  
+      return res.status(200).json({
+        message: "Trips fetched successfully",
+        statusCode: 200,
+        data: trips,
+      });
+  
     } catch (error) {
-      console.error("Error fetching trip:", error);
+      console.error("Error fetching trips:", error);
       return res.status(500).json({
         message: "Internal Server Error",
         statusCode: 500,
       });
     }
-  };
+};
   
 /// update trip ///
 const updateTrip = async (req, res) => {

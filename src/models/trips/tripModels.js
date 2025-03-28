@@ -1,6 +1,3 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../../config/database").default; // Import Sequelize instance
-
 module.exports = (sequelize, DataTypes) => {
   const Trip = sequelize.define(
     "Trip",
@@ -14,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BIGINT,
         allowNull: false,
         references: {
-          model: "users", // Referencing the users table
+          model: "users",
           key: "id",
         },
         onDelete: "CASCADE",
@@ -28,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       from_date: {
-        type: DataTypes.DATEONLY, // Stores only date (no time)
+        type: DataTypes.DATEONLY,
         allowNull: false,
       },
       to_date: {
@@ -43,18 +40,18 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
         validate: {
-          min: 0, // Budget must be non-negative
+          min: 0,
         },
       },
       cover_image: {
-        type: DataTypes.TEXT, // Stores image URL
+        type: DataTypes.TEXT,
         allowNull: true,
       },
     },
     {
-      tableName: "trips", // Explicit table name
+      tableName: "trips",
       timestamps: true,
-      createdAt: "created_at", // Match DB column name
+      createdAt: "created_at",
       updatedAt: "updated_at",
     }
   );

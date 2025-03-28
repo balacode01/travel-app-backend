@@ -139,6 +139,7 @@ const verifyOtp = async (req, res) => {
         const token = jwt.sign({ id: user.id, phone_number }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
         return res.status(201).json({
+            userId: user.id,
             statusCode: 201,
             message: "OTP verified successfully", phone_number, token });
 
